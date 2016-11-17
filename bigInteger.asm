@@ -13,16 +13,34 @@ GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, c
 ; AL = hex digit
 ; return RCX
 _getValueOfHex:
+	push rcx
+	push rdi
+
 	mov rcx, HEXDIGITSLEN
 	mov rdi, HEXDIGITS
 	repne scasb
+
+	pop rdi
+	pop rcx
 	ret
 
 ; RDI = address of first summand
 ; RSI = address of second summand
 ; return RDI
 addition:
+	mov rcx, BIGINTEGERLEN
 
+	mov al, [rdi]
+	call _getValueOfHex
+	mov r8, rcx
+
+	mov al, [rsi]
+	call _getValueOfHex
+	mov r9, rcx
+
+	mov r10, r8
+	stc			; sets carry flag
+	adc r10, r9		; just a test implementation for first numbers
 	ret
 
 ; RDI = address of minuend
