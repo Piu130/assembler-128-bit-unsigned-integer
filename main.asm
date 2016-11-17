@@ -4,11 +4,13 @@ SECTION .bss
 
 SECTION .text
 
+EXTERN addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
+
 GLOBAL _start
 
 _start:
 	nop
-
+	call addition
 	call exit
 
 exit:
