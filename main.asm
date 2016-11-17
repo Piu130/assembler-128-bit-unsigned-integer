@@ -22,7 +22,14 @@ _start:
 
 	mov rdi, X
 	call readBigInteger
+	mov rdi, Y
+	call readBigInteger
 
+	mov rdi, X
+	mov rsi, Y
+	call addition
+
+	mov rdi, X
 	call writeBigInteger
 
 	call exit
