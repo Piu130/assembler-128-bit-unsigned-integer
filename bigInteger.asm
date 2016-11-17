@@ -14,24 +14,27 @@ GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, c
 ; RSI = address of second summand
 ; return RDI
 addition:
+	; [WIP]
 	push r8			; use for carry
 	push r9			; current number of first bigint
 	push r10		; current number of second bigint
 	push rcx		; numberposition counter
 
 	xor r8, r8
+	mov rcx, BIGINTEGERLEN
 
-	mov al, [rdi+rcx]
-	sub al, '0'
-	mov r9, al		; value of rdi
+	.stringLoop
+		mov r9, [rdi+rcx]
+		sub r9, '0'
 
-	mov al, [rsi+rcx]
-	sub al, '0'
-	mov r10, al		; value of rsi
+		mov r10, [rsi+rcx]
+		sub r10, '0'
 
-	mov r11, r9
-	stc			; sets carry flag
-	adc r11, r10		; just a test implementation for first numbers
+		add r9, r10		; just a test implementation for first numbers
+		add r9, r8
+		; check result convert to hex number, add to rdi, check for overflow
+
+		loop .stringLoop
 	ret
 
 ; RDI = address of minuend
