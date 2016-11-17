@@ -1,8 +1,9 @@
 SECTION .data
 
+	BIGINTEGERLEN EQU 16
+
 SECTION .bss
 
-	BIGINTEGERLEN EQU 16
 	X resb BIGINTEGERLEN 
 	Y resb BIGINTEGERLEN
 	Z resb BIGINTEGERLEN
@@ -18,7 +19,12 @@ GLOBAL _start
 
 _start:
 	nop
-	
+
+	mov rdi, X
+	call readBigInteger
+
+	call writeBigInteger
+
 	call exit
 
 exit:
