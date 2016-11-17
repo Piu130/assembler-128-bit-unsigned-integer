@@ -6,7 +6,7 @@ SECTION .bss
 
 SECTION .text
 
-GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, CopyBigInteger
+GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
 
 ; RDI = address of first summand
 ; RSI = address of second summand
@@ -72,6 +72,18 @@ _readWriteBigInteger:
 ; RDI = address of original number
 ; RSI = address to copy number
 copyBigInteger:
+	push rdi
+	push rsi
+	push rdi
+	mov rdi, rsi
+	pop rsi
 
+	mov rcx, BIGINTEGERLEN
+	.loopCopyString
+		movsb
+		loop .loopCopyString
+
+	pop rsi
+	pop rdi
 	ret
 
