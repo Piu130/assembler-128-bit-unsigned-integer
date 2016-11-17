@@ -1,3 +1,9 @@
+SECTION .data
+
+	BIGINTEGERLEN EQU 16
+
+SECTION .bss
+
 SECTION .text
 
 GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, CopyBigInteger
@@ -24,13 +30,43 @@ multiplication:
 	ret
 
 ; RDI = address to read number
-readBitInteger:
+readBigInteger:
+	push rsi
 
+	mov rsi, 0
+	call _readWriteBigInteger
+
+	pop rsi
 	ret
 
 ; RDI = address of number to write
 writeBigInteger:
+	push rsi
 
+	mov rsi, 1
+	call _readWriteBigInteger
+	
+	pop rsi
+	ret
+
+; RDI = address of number to read/write
+; RSI = 0 for read, 1 for write
+_readWriteBigInteger:
+	push rsi
+	push rdi
+	push rax
+	push rdx
+
+	mov rax, rsi
+	mov rsi, rdi
+	mov rdi, 1
+	mov rdx, BIGINTEGERLEN
+	syscall
+
+	pop rdx
+	pop rax
+	pop rdi
+	pop rsi
 	ret
 
 ; RDI = address of original number
