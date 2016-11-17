@@ -79,9 +79,7 @@ copyBigInteger:
 	pop rsi
 
 	mov rcx, BIGINTEGERLEN
-	.loopCopyString
-		movsb
-		loop .loopCopyString
+	rep movsb
 
 	pop rsi
 	pop rdi
