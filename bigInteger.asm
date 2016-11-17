@@ -10,37 +10,28 @@ SECTION .text
 
 GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
 
-; AL = hex digit
-; return RCX
-_getValueOfHex:
-	push rcx
-	push rdi
-
-	mov rcx, HEXDIGITSLEN
-	mov rdi, HEXDIGITS
-	repne scasb
-
-	pop rdi
-	pop rcx
-	ret
-
 ; RDI = address of first summand
 ; RSI = address of second summand
 ; return RDI
 addition:
-	mov rcx, BIGINTEGERLEN
+	push r8			; use for carry
+	push r9			; current number of first bigint
+	push r10		; current number of second bigint
+	push rcx		; numberposition counter
 
-	mov al, [rdi]
-	call _getValueOfHex
-	mov r8, rcx
+	xor r8, r8
 
-	mov al, [rsi]
-	call _getValueOfHex
-	mov r9, rcx
+	mov al, [rdi+rcx]
+	sub al, '0'
+	mov r9, al		; value of rdi
 
-	mov r10, r8
+	mov al, [rsi+rcx]
+	sub al, '0'
+	mov r10, al		; value of rsi
+
+	mov r11, r9
 	stc			; sets carry flag
-	adc r10, r9		; just a test implementation for first numbers
+	adc r11, r10		; just a test implementation for first numbers
 	ret
 
 ; RDI = address of minuend
