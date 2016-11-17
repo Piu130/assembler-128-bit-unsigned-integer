@@ -1,6 +1,8 @@
 SECTION .data
 
 	BIGINTEGERLEN EQU 16
+	TESTX db "13BC4A439BCAFEC"
+	TESTY db "546BFACFED00000"
 
 SECTION .bss
 
@@ -20,13 +22,8 @@ GLOBAL _start
 _start:
 	nop
 
-	mov rdi, X
-	call readBigInteger
-	mov rdi, Y
-	call readBigInteger
-
-	mov rdi, X
-	mov rsi, Y
+	mov rdi, TESTX
+	mov rsi, TESTY
 	call addition
 
 	mov rdi, X
