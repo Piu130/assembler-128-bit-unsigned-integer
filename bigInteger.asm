@@ -1,12 +1,22 @@
 SECTION .data
 
 	BIGINTEGERLEN EQU 16
+	HEXDIGITS: db "FEDCBA9876543210"
+	HEXDIGITSLEN equ $-HEXDIGITS
 
 SECTION .bss
 
 SECTION .text
 
 GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
+
+; AL = hex digit
+; return RCX
+_getValueOfHex:
+	mov rcx, HEXDIGITSLEN
+	mov rdi, HEXDIGITS
+	repne scasb
+	ret
 
 ; RDI = address of first summand
 ; RSI = address of second summand
