@@ -51,44 +51,33 @@ multiplication:
 
 	ret
 
+; RDI = address of string
+%macro  _readWrite 1
+        push rsi
+        push rdi
+        push rax
+        push rdx
+
+        mov rax, %1
+        mov rsi, rdi
+        mov rdi, 1
+        mov rdx, BIGINTEGERLEN
+        syscall
+
+        pop rdx
+        pop rax
+        pop rdi
+        pop rsi
+%endmacro
+
 ; RDI = address to read number
 readBigInteger:
-	push rsi
-
-	mov rsi, 0
-	call _readWriteBigInteger
-
-	pop rsi
+	_readWrite 0
 	ret
 
 ; RDI = address of number to write
 writeBigInteger:
-	push rsi
-
-	mov rsi, 1
-	call _readWriteBigInteger
-	
-	pop rsi
-	ret
-
-; RDI = address of number to read/write
-; RSI = 0 for read, 1 for write
-_readWriteBigInteger:
-	push rsi
-	push rdi
-	push rax
-	push rdx
-
-	mov rax, rsi
-	mov rsi, rdi
-	mov rdi, 1
-	mov rdx, BIGINTEGERLEN
-	syscall
-
-	pop rdx
-	pop rax
-	pop rdi
-	pop rsi
+	_readWrite 1
 	ret
 
 ; RDI = address of original number
