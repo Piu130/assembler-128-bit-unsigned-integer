@@ -52,7 +52,7 @@ multiplication:
 	ret
 
 ; RDI = address of string
-%macro  _readWrite 1
+%macro  _readWriteBigInteger 1
         push rsi
         push rdi
         push rax
@@ -72,12 +72,12 @@ multiplication:
 
 ; RDI = address to read number
 readBigInteger:
-	_readWrite 0
+	_readWriteBigInteger 0
 	ret
 
 ; RDI = address of number to write
 writeBigInteger:
-	_readWrite 1
+	_readWriteBigInteger 1
 	ret
 
 ; RDI = address of original number
