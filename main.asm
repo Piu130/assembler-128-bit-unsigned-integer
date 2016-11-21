@@ -1,8 +1,8 @@
 SECTION .data
 
 	BIGINTEGERLEN EQU 16
-	TESTX db "13BC4A439BCAFEC"
-	TESTY db "546BFACFED00000"
+	TESTX TIMES 2 DQ 0xF894BFAC5677895F, 0x1234567890ABCDEF
+	TESTY TIMES 2 DQ 0x0000000000000001, 0x0000000000000001
 
 SECTION .bss
 
@@ -21,13 +21,10 @@ GLOBAL _start
 
 _start:
 	nop
-
 	mov rdi, TESTX
 	mov rsi, TESTY
 	call addition
 
-	mov rdi, X
-	call writeBigInteger
 
 	call exit
 
