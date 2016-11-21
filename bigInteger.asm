@@ -14,27 +14,11 @@ GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, c
 ; RSI = address of second summand
 ; return RDI
 addition:
-	; [WIP]
-	push r8			; use for carry
-	push r9			; current number of first bigint
-	push r10		; current number of second bigint
-	push rcx		; numberposition counter
-
-	xor r8, r8
-	mov rcx, BIGINTEGERLEN
-
-	.stringLoop
-		mov r9, [rdi+rcx]
-		sub r9, '0'
-
-		mov r10, [rsi+rcx]
-		sub r10, '0'
-
-		add r9, r10		; just a test implementation for first numbers
-		add r9, r8
-		; check result convert to hex number, add to rdi, check for overflow
-
-		loop .stringLoop
+	mov rax, qword[rsi]
+	add qword[rdi], rax	; adds the first 8 bytes
+	mov rax, qword[rsi+8]
+	adc qword[rdi+8], rax	; adds the last 8 bytes with carry from before
+				; with 'jc label' here we could check if there is an overflow
 	ret
 
 ; RDI = address of minuend
@@ -52,6 +36,7 @@ multiplication:
 	ret
 
 ; RDI = address of string
+; %1 = 0 for read, 1 for write
 %macro  _readWriteBigInteger 1
         push rsi
         push rdi
