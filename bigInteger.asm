@@ -25,7 +25,11 @@ addition:
 ; RSI = address of subtrahend
 ; return RDI
 subtraction:
-
+	mov rax, qword[rsi]
+	sub qword[rdi], rax	; subtracts the first 8 bytes
+	mov rax, qword[rsi+8]
+	sbb qword[rdi+8], rax	; subtracts the last 8 bytes with borrow from before
+				; with 'jc label' here we could check if there is an 'underflow'
 	ret
 
 ; RDI = address of first multiplier
@@ -46,8 +50,20 @@ multiplication:
         mov rax, %1
         mov rsi, rdi
         mov rdi, 1
-        mov rdx, BIGINTEGERLEN
+        mov rdx, 2*BIGINTEGERLEN
         syscall
+
+	; @TODO convert string to hex here
+	mov rcx, 2*BIGINTEGERLEN
+	.loop
+		mov rax, [rdi+rcx]
+		sub rax, '0'		; sub '0' to convert 0-9
+		cmp rax, 9
+		jle .done
+		sub rax, 7		; sub '0' from above and 7 to convert A-F
+		.done
+		mov [rdi+rcx], rax
+		loop .loop
 
         pop rdx
         pop rax
