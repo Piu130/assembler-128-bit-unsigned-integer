@@ -53,7 +53,7 @@ multiplication:
         push rdx
 
         mov rax, %1
-        mov rsi, rdi
+        mov rsi, BUFF
         mov rdi, 1
         mov rdx, BUFFLEN
         syscall
@@ -112,7 +112,6 @@ writeBigInteger:
 
 		loop .loopLetters
 
-	mov rdi, BUFF
 	_readWriteBigInteger 1
 
 	pop rdi
