@@ -53,18 +53,6 @@ multiplication:
         mov rdx, 2*BIGINTEGERLEN
         syscall
 
-	; @TODO convert string to hex here
-	mov rcx, 2*BIGINTEGERLEN
-	.loop
-		mov rax, [rdi+rcx]
-		sub rax, '0'		; sub '0' to convert 0-9
-		cmp rax, 9
-		jle .done
-		sub rax, 7		; sub '0' from above and 7 to convert A-F
-		.done
-		mov [rdi+rcx], rax
-		loop .loop
-
         pop rdx
         pop rax
         pop rdi
@@ -74,11 +62,30 @@ multiplication:
 ; RDI = address to read number
 readBigInteger:
 	_readWriteBigInteger 0
+
+	push rcx
+	push rax
+
+	mov rcx, 2*BIGINTEGERLEN
+	.stringToHex
+		mov rax, [rdi+rcx]
+		sub rax, '0'
+		cmp rax, 9
+		jle .done
+		sub rax, 7
+		.done
+		mov [rdi+rcx], rax
+		loop .stringToHex
+
+	pop rax
+	pop rcx
 	ret
 
 ; RDI = address of number to write
 writeBigInteger:
 	_readWriteBigInteger 1
+
+
 	ret
 
 ; RDI = address of original number
