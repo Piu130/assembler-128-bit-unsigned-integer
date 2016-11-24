@@ -96,7 +96,7 @@ writeBigInteger:
 	push rbx
 	push rdi
 
-	mov rcx, 16
+	mov rcx, BIGINTEGERLEN
 	.loopLetters
 		xor rax, rax			; clear rax
 		mov al, byte[rdi+rcx-1]		; mov current number to al
