@@ -38,6 +38,7 @@ subtraction:
 				; with 'jc label' here we could check if there is an 'underflow'
 	ret
 
+; [WIP]
 ; RDI = address of first multiplier
 ; RSI = address of second multiplier
 ; return RDI 
@@ -45,6 +46,7 @@ multiplication:
 
 	ret
 
+; reads hexstring into BUFF. Maxlength BUFFLEN.
 ; %1 = 0 for read, 1 for write
 %macro  _readWriteBigInteger 1
         push rsi
@@ -64,6 +66,18 @@ multiplication:
         pop rsi
 %endmacro
 
+; converts string al to its hex equavilent
+%marco _stringToHex 0
+	cmp al, 0				; if 0 then end of string or invalid char
+	je .done				; jump to done
+	sub al, '0'				; sub '0' to convert 0-9
+	cpm al, 9				; if 0-9
+	jle .done				; jump to done
+	sub al, 7				; else sub 7 to convert A-F
+	.done
+%endmacro
+
+; [WIP]
 ; RDI = address to read number
 readBigInteger:
 	_readWriteBigInteger 0
@@ -72,18 +86,24 @@ readBigInteger:
 	push rax
 
 	mov r8, BUFF
-	mov rcx, BUFFLEN
-	.stringToHex
-		mov rax, [BUFF+rcx]
-		cmp rax, 0
-		je .done		; check for 0 here (end of string)
-		sub rax, '0'
-		cmp rax, 9
-		jle .done
-		sub rax, 7
-		.done
-		mov [rdi+rcx], rax
-		loop .stringToHex
+	mov rsi, rdi
+	mov rcx, BIGINTEGERLEN
+	.stringLoop
+		xor rax, rax			; clear rax
+		xor rbx,rbx
+
+		mov al, byte[BUFF+rcx*2-1]	; copy letter
+		_stringToHex
+		mov bl, al
+		shr bl, 4
+
+		mov al, byte[BUFF+rcx*2-2]	; copy second letter
+		_stringToHex
+		add bl, al
+
+		mov [rdi+rcx], bl
+
+		loop .stringLoop
 
 	pop rax
 	pop rcx
@@ -97,7 +117,7 @@ writeBigInteger:
 	push rdi
 
 	mov rcx, BIGINTEGERLEN
-	.loopLetters
+	.hexToString
 		xor rax, rax			; clear rax
 		mov al, byte[rdi+rcx-1]		; mov current number to al
 		mov rbx, rax			; copy it for second nybble
@@ -110,7 +130,7 @@ writeBigInteger:
 		mov bl, byte[HEXDIGITS+rbx]	; get character equivalent
 		mov byte[BUFF+rcx*2-2], bl	; writes the number to its position
 
-		loop .loopLetters
+		loop .hexToString
 
 	_readWriteBigInteger 1
 
