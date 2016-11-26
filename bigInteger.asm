@@ -69,12 +69,12 @@ multiplication:
 ; converts string al to its hex equavilent
 %macro _stringToHex 0
 	cmp al, 0				; if 0 then end of string or invalid char
-	je .done				; jump to done
+	je %%done				; jump to done
 	sub al, '0'				; sub '0' to convert 0-9
-	cpm al, 9				; if 0-9
-	jle .done				; jump to done
+	cmp al, 9				; if 0-9
+	jle %%done				; jump to done
 	sub al, 7				; else sub 7 to convert A-F
-	.done
+	%%done
 %endmacro
 
 ; [WIP]
@@ -93,12 +93,12 @@ readBigInteger:
 		xor rbx,rbx
 
 		mov al, byte[BUFF+rcx*2-1]	; copy letter
-		;_stringToHex
+		_stringToHex
 		mov bl, al
 		shr bl, 4
 
 		mov al, byte[BUFF+rcx*2-2]	; copy second letter
-		;_stringToHex
+		_stringToHex
 		add bl, al
 
 		mov [rdi+rcx], bl
