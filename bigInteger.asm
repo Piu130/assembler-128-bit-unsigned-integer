@@ -46,7 +46,7 @@ multiplication:
 
 	ret
 
-; reads hexstring into BUFF. Maxlength BUFFLEN.
+; reads hexstring into BUFF. Maxlength is BUFFLEN.
 ; %1 = 0 for read, 1 for write
 %macro  _readWriteBigInteger 1
         push rsi
@@ -94,14 +94,14 @@ readBigInteger:
 
 		mov al, byte[BUFF+rcx*2-1]	; copy letter
 		_stringToHex
-		mov bl, al
-		shr bl, 4
+		mov bl, al			; store hex value in bl
+		shr bl, 4			; shift 4 for little endian
 
 		mov al, byte[BUFF+rcx*2-2]	; copy second letter
 		_stringToHex
-		add bl, al
+		or bl, al			; add al (0000xxxx) to bl (xxxx0000)
 
-		mov [rdi+rcx], bl
+		mov [rdi+rcx], bl		; store bl to its position
 
 		loop .stringLoop
 
