@@ -99,7 +99,7 @@ readBigInteger:
 
 		mov al, byte[BUFF+rcx*2-2]	; copy second letter
 		_stringToHex
-		or bl, al			; add al (0000xxxx) to bl (xxxx0000)
+		or bl, al			; or bl (xxxx0000) with al (0000xxxx)
 
 		mov [rdi+rcx], bl		; store bl to its position
 
