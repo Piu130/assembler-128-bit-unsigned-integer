@@ -62,7 +62,7 @@ multiplication:
 	mov rax, r8
 	mul qword[rsi]		; multiply first 2 blocks
 	mov qword[rdi], rax	; move first result to first block
-	mov qword[rdi+8], rdx
+	mov qword[rdi+8], rdx	; move overflow to second block
 
 	xor rdx, rdx		; clear rdx for mul
 	mov rax, r8
