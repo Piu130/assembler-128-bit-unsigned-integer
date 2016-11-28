@@ -54,7 +54,9 @@ multiplication:
 	push rbx
 
 	mov rax, qword[rsi]
-	mul qword[rdi], rax	; multiply first 2 blocks
+	mov rbx, qword[rdi]
+	mul rbx			; multiply first 2 blocks
+	mov qword[rdi], rax
 
 	mov rax, qword[rsi+8]
 	mov rbx, qword[rdi]
@@ -113,7 +115,7 @@ readBigInteger:
 	push rbx
 
 	mov rcx, BIGINTEGERLEN
-	.stringLoop
+	.stringLoop:
 		xor rax, rax			; clear rax
 		xor rbx,rbx			; clear rbx
 
@@ -142,7 +144,7 @@ writeBigInteger:
 	push rbx
 
 	mov rcx, BIGINTEGERLEN
-	.hexToString
+	.hexToString:
 		xor rax, rax			; clear rax
 		mov al, byte[rdi+rcx-1]		; mov current number to al
 		mov rbx, rax			; copy it for second nybble
