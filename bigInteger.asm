@@ -46,7 +46,6 @@ subtraction:
 	pop rax
 	ret
 
-; [WIP]
 ; RDI = address of first multiplier
 ; RSI = address of second multiplier
 ; return RDI 
@@ -63,13 +62,13 @@ multiplication:
 	mov rax, r8
 	mul qword[rsi]		; multiply first 2 blocks
 	mov qword[rdi], rax	; move first result to first block
+	mov qword[rdi+8], rdx
 
 	xor rdx, rdx		; clear rdx for mul
 	mov rax, r8
 	mul qword[rsi+8]	; multiply first block with second block
 	add qword[rdi], rax	; add first multiplication block
-	mov qword[rdi+8], rdx	; move second multiplication block
-	adc qword[rdi+8], 0	; add carry (add it here to clear rdi+8 with mov above)
+	adc qword[rdi+8], rdx	; add second multiplication block
 
 	xor rdx, rdx		; clear rdx for mul
 	mov rax, r9
