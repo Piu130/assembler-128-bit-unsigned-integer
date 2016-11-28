@@ -16,6 +16,8 @@ SECTION .text
 
 GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
 
+; Adds number from rsi to rdi
+;
 ; RDI = address of first summand
 ; RSI = address of second summand
 ; return RDI
@@ -49,30 +51,36 @@ subtraction:
 ; RSI = address of second multiplier
 ; return RDI 
 multiplication:
-	push rax
+	push r8
+	push r9
 	push rdx
-	push rbx
+	push rax
 
-	mov rax, qword[rsi]
-	mov rbx, qword[rdi]
-	mul rbx			; multiply first 2 blocks
-	mov qword[rdi], rax
+	mov r8, qword[rdi]	; frist block, first multiplier 
+	mov r9, qword[rdi+8]	; second block, first multiplier
 
-	mov rax, qword[rsi+8]
-	mov rbx, qword[rdi]
-	mul rbx			; multiply first block with second block
-	add qword[rdi], rax	; adds first multiplication block
-	adc qword[rdi+8], rdx	; adds secont multiplication block
+	xor rdx, rdx		; clear rdx for mul
+	mov rax, r8
+	mul qword[rsi]		; multiply first 2 blocks
+	mov qword[rdi], rax	; move first result to first block
 
-	mov rax, qword[rdi+8]
-	mov rbx, qword[rsi]
-	mul rbx			; multiply secont block with first block
-	add qword[rdi], rax	; adds first multiplication block
-	adc qword[rdi+8], rdx	; adds second multiplication block
+	xor rdx, rdx		; clear rdx for mul
+	mov rax, r8
+	mul qword[rsi+8]	; multiply first block with second block
+	add qword[rdi], rax	; add first multiplication block
+	mov qword[rdi+8], rdx	; move second multiplication block
+	adc qword[rdi+8], 0	; add carry (add it here to clear rdi+8 with mov above)
 
-	pop rbx
-	pop rdx
+	xor rdx, rdx		; clear rdx for mul
+	mov rax, r9
+	mul qword[rsi]		; multiply second block with first block
+	add qword[rdi], rax	; add first multiplication block
+	adc qword[rdi+8], rdx	; add second multiplication block
+
 	pop rax
+	pop rdx
+	pop r9
+	pop r8
 	ret
 
 ; reads hexstring into BUFF. Maxlength is BUFFLEN.
