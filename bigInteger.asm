@@ -77,34 +77,33 @@ multiplication:
 	%%done
 %endmacro
 
-; [WIP]
 ; RDI = address to read number
 readBigInteger:
 	_readWriteBigInteger 0
 
 	push rcx
 	push rax
+	push rbx
 
-	mov r8, BUFF
-	mov rsi, rdi
 	mov rcx, BIGINTEGERLEN
 	.stringLoop
 		xor rax, rax			; clear rax
-		xor rbx,rbx
+		xor rbx,rbx			; clear rbx
 
-		mov al, byte[BUFF+rcx*2-1]	; copy letter
+		mov al, byte[BUFF+rcx*2-2]	; copy letter
 		_stringToHex
 		mov bl, al			; store hex value in bl
-		shr bl, 4			; shift 4 for little endian
+		shl bl, 4			; shift 4 for little endian
 
-		mov al, byte[BUFF+rcx*2-2]	; copy second letter
+		mov al, byte[BUFF+rcx*2-1]	; copy second letter
 		_stringToHex
 		or bl, al			; or bl (xxxx0000) with al (0000xxxx)
 
-		mov [rdi+rcx], bl		; store bl to its position
+		mov [rdi+rcx-1], bl		; store bl to its position
 
 		loop .stringLoop
 
+	pop rbx
 	pop rax
 	pop rcx
 	ret
