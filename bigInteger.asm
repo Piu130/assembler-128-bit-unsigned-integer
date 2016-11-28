@@ -67,14 +67,12 @@ multiplication:
 	xor rdx, rdx		; clear rdx for mul
 	mov rax, r8
 	mul qword[rsi+8]	; multiply first block with second block
-	add qword[rdi], rax	; add first multiplication block
-	adc qword[rdi+8], rdx	; add second multiplication block
+	add qword[rdi+8], rax	; add first multiplication block
 
 	xor rdx, rdx		; clear rdx for mul
 	mov rax, r9
 	mul qword[rsi]		; multiply second block with first block
-	add qword[rdi], rax	; add first multiplication block
-	adc qword[rdi+8], rdx	; add second multiplication block
+	add qword[rdi+8], rax	; add first multiplication block
 
 	pop rax
 	pop rdx
