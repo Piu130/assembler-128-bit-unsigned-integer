@@ -20,22 +20,28 @@ GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, c
 ; RSI = address of second summand
 ; return RDI
 addition:
+	push rax
+
 	mov rax, qword[rsi]
 	add qword[rdi], rax	; adds the first 8 bytes
 	mov rax, qword[rsi+8]
 	adc qword[rdi+8], rax	; adds the last 8 bytes with carry from before
 				; with 'jc label' here we could check if there is an overflow
+	pop rax
 	ret
 
 ; RDI = address of minuend
 ; RSI = address of subtrahend
 ; return RDI
 subtraction:
+	push rax
+
 	mov rax, qword[rsi]
 	sub qword[rdi], rax	; subtracts the first 8 bytes
 	mov rax, qword[rsi+8]
 	sbb qword[rdi+8], rax	; subtracts the last 8 bytes with borrow from before
 				; with 'jc label' here we could check if there is an 'underflow'
+	pop rax
 	ret
 
 ; [WIP]
@@ -43,7 +49,28 @@ subtraction:
 ; RSI = address of second multiplier
 ; return RDI 
 multiplication:
+	push rax
+	push rdx
+	push rbx
 
+	mov rax, qword[rsi]
+	mul qword[rdi], rax	; multiply first 2 blocks
+
+	mov rax, qword[rsi+8]
+	mov rbx, qword[rdi]
+	mul rbx			; multiply first block with second block
+	add qword[rdi], rax	; adds first multiplication block
+	adc qword[rdi+8], rdx	; adds secont multiplication block
+
+	mov rax, qword[rdi+8]
+	mov rbx, qword[rsi]
+	mul rbx			; multiply secont block with first block
+	add qword[rdi], rax	; adds first multiplication block
+	adc qword[rdi+8], rdx	; adds second multiplication block
+
+	pop rbx
+	pop rdx
+	pop rax
 	ret
 
 ; reads hexstring into BUFF. Maxlength is BUFFLEN.
