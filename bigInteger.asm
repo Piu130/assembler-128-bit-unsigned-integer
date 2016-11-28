@@ -69,10 +69,21 @@ multiplication:
 	mul qword[rsi+8]	; multiply first block with second block
 	add qword[rdi+8], rax	; add first multiplication block
 
+	mov r10, rdx		; to calculate OF
+
 	xor rdx, rdx		; clear rdx for mul
 	mov rax, r9
 	mul qword[rsi]		; multiply second block with first block
 	add qword[rdi+8], rax	; add first multiplication block
+
+	jc .setOverFlowFlag	; set OF if carry is set from addition
+	or r10, rdx		; to calculate OF
+	cmp r10, 0		; check if no overflow
+	jne .setOverFlowFlag	; set OF if overflow from mul
+
+	jmp $+2			; no overflow so jump next 2 lines
+	.setOverFlowFlag:
+	sev			; set overflow flag
 
 	pop rax
 	pop rdx
