@@ -91,7 +91,7 @@ multiplication:
         mov rax, %1
         mov rsi, BUFF
         mov rdi, 1
-        mov rdx, BUFFLEN
+        mov rdx, BUFFLEN+2
         syscall
 
         pop rdx
