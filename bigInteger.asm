@@ -113,7 +113,6 @@ writeBigInteger:
 	push rcx
 	push rax
 	push rbx
-	push rdi
 
 	mov rcx, BIGINTEGERLEN
 	.hexToString
@@ -133,7 +132,6 @@ writeBigInteger:
 
 	_readWriteBigInteger 1
 
-	pop rdi
 	pop rbx
 	pop rax
 	pop rcx
