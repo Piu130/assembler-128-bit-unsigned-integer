@@ -127,10 +127,12 @@ readBigInteger:
 	_readWriteBigInteger 0
 
 	push rcx
+	push rdx
 	push rax
 	push rbx
 
-	mov rcx, BIGINTEGERLEN
+	mov rcx, BIGINTEGERLEN			; input loop
+	xor rdx, rdx				; store loop
 	.stringLoop:
 		xor rax, rax			; clear rax
 		xor rbx,rbx			; clear rbx
@@ -143,23 +145,25 @@ readBigInteger:
 		mov al, byte[BUFF+rcx*2-1]	; copy second letter
 		_stringToHex
 		or bl, al			; or bl (xxxx0000) with al (0000xxxx)
-
-		mov [rdi+rcx-1], bl		; store bl to its position
-
+		mov [rdi+rdx], bl		; store bl to its position
+		inc rdx
 		loop .stringLoop
 
 	pop rbx
 	pop rax
+	pop rdx
 	pop rcx
 	ret
 
 ; RDI = address of number to write
 writeBigInteger:
 	push rcx
+	push rdx
 	push rax
 	push rbx
 
-	mov rcx, BIGINTEGERLEN
+	mov rcx, BIGINTEGERLEN			; store loop
+	xor rdx, rdx				; output loop
 	.hexToString:
 		xor rax, rax			; clear rax
 		mov al, byte[rdi+rcx-1]		; mov current number to al
@@ -167,18 +171,19 @@ writeBigInteger:
 
 		and al, 0Fh			; mask out all but low nybble
 		mov al, byte[HEXDIGITS+rax]	; get character equivalent
-		mov byte[BUFF+rcx*2-1], al	; writes the number to its position
+		mov byte[BUFF+rdx*2+1], al	; writes the number to its position
 
 		shr bl, 4			; shift high 4 bits of char into low 4 bits
 		mov bl, byte[HEXDIGITS+rbx]	; get character equivalent
-		mov byte[BUFF+rcx*2-2], bl	; writes the number to its position
-
+		mov byte[BUFF+rdx*2], bl	; writes the number to its position
+		inc rdx
 		loop .hexToString
 
 	_readWriteBigInteger 1
 
 	pop rbx
 	pop rax
+	pop rdx
 	pop rcx
 	ret
 
