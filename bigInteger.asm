@@ -17,7 +17,6 @@ SECTION .text
 GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
 
 ; Adds number from rsi to rdi
-;
 ; RDI = address of first summand
 ; RSI = address of second summand
 ; return RDI
@@ -32,6 +31,7 @@ addition:
 	pop rax
 	ret
 
+; Subtracts number from rsi to rdi
 ; RDI = address of minuend
 ; RSI = address of subtrahend
 ; return RDI
@@ -46,9 +46,10 @@ subtraction:
 	pop rax
 	ret
 
+; Multiply rsi with rdi
 ; RDI = address of first multiplier
 ; RSI = address of second multiplier
-; return RDI 
+; return RDI
 multiplication:
 	push r8
 	push r9
@@ -122,6 +123,7 @@ multiplication:
 	%%done
 %endmacro
 
+; Reads number to rdi
 ; RDI = address to read number
 readBigInteger:
 	_readWriteBigInteger 0
@@ -155,6 +157,7 @@ readBigInteger:
 	pop rcx
 	ret
 
+; Writes number from rdi
 ; RDI = address of number to write
 writeBigInteger:
 	push rcx
@@ -187,6 +190,7 @@ writeBigInteger:
 	pop rcx
 	ret
 
+; Copy number from rdi to rdi
 ; RDI = address of original number
 ; RSI = address to copy number
 copyBigInteger:
