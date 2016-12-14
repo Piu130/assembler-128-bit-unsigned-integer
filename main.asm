@@ -18,7 +18,7 @@ SECTION .bss
 
 SECTION .text
 
-EXTERN addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
+EXTERN addition, subtraction, multiplication, readUDlong, writeUDlong, copyUDlong
 EXTERN printf
 
 GLOBAL main
@@ -32,7 +32,7 @@ main:
 	call printf
 
 	mov rdi, X
-	call readBigInteger
+	call readUDlong
 
 	mov rdi, ENTER
 	mov rsi, 'Y'
@@ -40,7 +40,7 @@ main:
 	call printf
 
 	mov rdi, Y
-	call readBigInteger
+	call readUDlong
 
 	mov rdi, ENTER
 	mov rsi, 'Z'
@@ -48,19 +48,19 @@ main:
 	call printf
 
 	mov rdi, Z
-	call readBigInteger
+	call readUDlong
 
 	mov rdi, X
 	mov rsi, R
-	call copyBigInteger
+	call copyUDlong
 
 	mov rdi, Y
 	mov rsi, S
-	call copyBigInteger
+	call copyUDlong
 
 	mov rdi, Z
 	mov rsi, T
-	call copyBigInteger
+	call copyUDlong
 
 	mov rdi, X
 	mov rsi, Y
@@ -72,14 +72,14 @@ main:
 	xor rax, rax
 	call printf
 	mov rdi, X
-	call writeBigInteger
+	call writeUDlong
 
 	mov rdi, VARIS
 	mov rsi, 'Y'
 	xor rax, rax
 	call printf
 	mov rdi, Y
-	call writeBigInteger
+	call writeUDlong
 
 	mov rdi, X
 	mov rsi, Y
@@ -91,14 +91,14 @@ main:
 	xor rax, rax
 	call printf
 	mov rdi, X
-	call writeBigInteger
+	call writeUDlong
 
         mov rdi, VARIS
         mov rsi, 'Y'
         xor rax, rax
         call printf
         mov rdi, Y
-        call writeBigInteger
+        call writeUDlong
 
         mov rdi, R
         mov rsi, S
@@ -110,14 +110,14 @@ main:
         xor rax, rax
         call printf
         mov rdi, R
-        call writeBigInteger
+        call writeUDlong
 
         mov rdi, VARIS
         mov rsi, 'S'
         xor rax, rax
         call printf
         mov rdi, S
-        call writeBigInteger
+        call writeUDlong
 
         mov rdi, T
         mov rsi, Z
@@ -129,14 +129,14 @@ main:
         xor rax, rax
         call printf
         mov rdi, T
-        call writeBigInteger
+        call writeUDlong
 
         mov rdi, VARIS
         mov rsi, 'Z'
         xor rax, rax
         call printf
         mov rdi, Z
-        call writeBigInteger
+        call writeUDlong
 
 	call exit
 
