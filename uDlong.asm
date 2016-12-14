@@ -1,6 +1,6 @@
 SECTION .data
 
-	BIGINTEGERLEN EQU 16
+	UDLONGLEN EQU 16
 	HEXDIGITS: db "0123456789ABCDEF"
 	HEXDIGITSLEN equ $-HEXDIGITS
 
@@ -15,7 +15,7 @@ SECTION .bss
 
 SECTION .text
 
-GLOBAL addition, subtraction, multiplication, readBigInteger, writeBigInteger, copyBigInteger
+GLOBAL addition, subtraction, multiplication, readUDlong, writeUDlong, copyUDlong
 
 ; Adds number from rsi to rdi
 ; RDI = address of first summand
@@ -96,7 +96,7 @@ multiplication:
 ; reads hexstring into BUFF. Maxlength is BUFFLEN.
 ; %1 = 0 for read, 1 for write
 ; return BUFF as String, RBP as read length
-%macro  _readWriteBigInteger 1
+%macro  _readWriteUDlong 1
         push rsi
         push rdi
         push rax
@@ -137,18 +137,18 @@ multiplication:
 
 ; Reads number to rdi
 ; RDI = address to read number
-readBigInteger:
+readUDlong:
 	mov qword[BUFF], 0
 	mov qword[BUFF+8], 0
 
-	_readWriteBigInteger 0
+	_readWriteUDlong 0
 
 	push rcx
 	push rdx
 	push rax
 	push rbx
 
-	mov rcx, BIGINTEGERLEN			; store loop
+	mov rcx, UDLONGLEN			; store loop
 	xor rdx, rdx				; input loop
 
 	.stringLoop:
@@ -176,13 +176,13 @@ readBigInteger:
 
 ; Writes number from rdi
 ; RDI = address of number to write
-writeBigInteger:
+writeUDlong:
 	push rcx
 	push rdx
 	push rax
 	push rbx
 
-	mov rcx, BIGINTEGERLEN			; store loop
+	mov rcx, UDLONGLEN			; store loop
 	xor rdx, rdx				; output loop
 	.hexToString:
 		xor rax, rax			; clear rax
@@ -201,7 +201,7 @@ writeBigInteger:
 
 	mov byte[BUFF+BUFFLEN-1], 10
 
-	_readWriteBigInteger 1
+	_readWriteUDlong 1
 
 	pop rbx
 	pop rax
@@ -212,14 +212,14 @@ writeBigInteger:
 ; Copy number from rdi to rdi
 ; RDI = address of original number
 ; RSI = address to copy number
-copyBigInteger:
+copyUDlong:
 	push rdi
 	push rsi
 	push rdi
 	mov rdi, rsi
 	pop rsi
 
-	mov rcx, BIGINTEGERLEN
+	mov rcx, UDLONGLEN
 	rep movsb
 
 	pop rsi
