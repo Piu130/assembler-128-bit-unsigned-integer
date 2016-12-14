@@ -199,6 +199,8 @@ writeBigInteger:
 		inc rdx
 		loop .hexToString
 
+	mov byte[BUFF+BUFFLEN], 10
+
 	_readWriteBigInteger 1
 
 	pop rbx
