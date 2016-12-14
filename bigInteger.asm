@@ -4,12 +4,13 @@ SECTION .data
 	HEXDIGITS: db "0123456789ABCDEF"
 	HEXDIGITSLEN equ $-HEXDIGITS
 
-	HEXSTR:	db "00000000000000000000000000000000",10
+	HEXSTR:	db "00000000000000000000000000000000"
 	HEXLEN equ $-HEXSTR
 
 SECTION .bss
 
-	BUFFLEN equ 32		; we need 32 because 1 char needs 1 byte and 1 hex needs 4 bits
+	BUFFLEN equ 33		; we need 33 because 1 char needs 1 byte and 1 hex needs 4 bits
+				; +1 becaues of LF
 	BUFF resb BUFFLEN	; temp buffer to read hex value
 
 SECTION .text
@@ -94,6 +95,7 @@ multiplication:
 
 ; reads hexstring into BUFF. Maxlength is BUFFLEN.
 ; %1 = 0 for read, 1 for write
+; return BUFF as String, RBP as read length
 %macro  _readWriteBigInteger 1
         push rsi
         push rdi
@@ -106,26 +108,39 @@ multiplication:
         mov rdx, BUFFLEN
         syscall
 
+	mov rbp, rax
+
         pop rdx
         pop rax
         pop rdi
         pop rsi
 %endmacro
 
-; converts string al to its hex equavilent
+; converts string in register al to its hex equavilent
+; return AL as converted value
 %macro _stringToHex 0
-	cmp al, 0				; if 0 then end of string or invalid char
-	je %%done				; jump to done
+	cmp al, '0'				; if less than '0' end of string or invalid char
+	jl %%invalidChar			; jump to done
 	sub al, '0'				; sub '0' to convert 0-9
 	cmp al, 9				; if 0-9
 	jle %%done				; jump to done
 	sub al, 7				; else sub 7 to convert A-F
-	%%done
+	cmp al, 0Fh				; if A-F
+	jle %%done				; jump to done
+	sub al, 32				; else sub 32 to convert a-f
+	cmp al, 0Fh				; if less or equal than F
+	jle %%done				; jump to done
+	%%invalidChar:
+	mov al, 0
+	%%done:
 %endmacro
 
 ; Reads number to rdi
 ; RDI = address to read number
 readBigInteger:
+	mov qword[BUFF], 0
+	mov qword[BUFF+8], 0
+
 	_readWriteBigInteger 0
 
 	push rcx
@@ -133,23 +148,25 @@ readBigInteger:
 	push rax
 	push rbx
 
-	mov rcx, BIGINTEGERLEN			; input loop
-	xor rdx, rdx				; store loop
+	mov rcx, BIGINTEGERLEN			; store loop
+	xor rdx, rdx				; input loop
+
 	.stringLoop:
 		xor rax, rax			; clear rax
-		xor rbx,rbx			; clear rbx
-
-		mov al, byte[BUFF+rcx*2-2]	; copy letter
+		mov al, byte[BUFF+rdx*2]	; copy letter
 		_stringToHex
-		mov bl, al			; store hex value in bl
+		mov rbx, rax			; store hex value in bl
 		shl bl, 4			; shift 4 for little endian
 
-		mov al, byte[BUFF+rcx*2-1]	; copy second letter
+		mov al, byte[BUFF+rdx*2+1]	; copy second letter
 		_stringToHex
 		or bl, al			; or bl (xxxx0000) with al (0000xxxx)
-		mov [rdi+rdx], bl		; store bl to its position
+		mov [rdi+rcx-1], bl		; store bl to its position
+
 		inc rdx
-		loop .stringLoop
+		dec rcx
+		cmp rdx, rbp			; if rdx not >= readlength
+		jnae .stringLoop
 
 	pop rbx
 	pop rax
