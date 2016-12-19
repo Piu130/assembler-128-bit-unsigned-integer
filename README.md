@@ -1,4 +1,4 @@
-# assembler-128-bit-unsigned-integer
+# assembly-128-bit-unsigned-double-long
 
 This is a school project.
 
