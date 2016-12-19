@@ -4,9 +4,6 @@ SECTION .data
 	HEXDIGITS: db "0123456789ABCDEF"
 	HEXDIGITSLEN equ $-HEXDIGITS
 
-	HEXSTR:	db "00000000000000000000000000000000"
-	HEXLEN equ $-HEXSTR
-
 SECTION .bss
 
 	BUFFLEN equ 33		; we need 33 because 1 char needs 1 byte and 1 hex needs 4 bits
