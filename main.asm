@@ -74,6 +74,13 @@ main:
 	mov rdi, X
 	call writeUDlong
 
+        mov rdi, VARIS
+        mov rsi, 'X'
+        xor rax, rax
+        call printf
+        mov rdi, X
+        call writeUDlong
+
 	mov rdi, VARIS
 	mov rsi, 'Y'
 	xor rax, rax
@@ -92,6 +99,13 @@ main:
 	call printf
 	mov rdi, X
 	call writeUDlong
+
+        mov rdi, VARIS
+        mov rsi, 'X'
+        xor rax, rax
+        call printf
+        mov rdi, X
+        call writeUDlong
 
         mov rdi, VARIS
         mov rsi, 'Y'
@@ -113,6 +127,13 @@ main:
         call writeUDlong
 
         mov rdi, VARIS
+        mov rsi, 'R'
+        xor rax, rax
+        call printf
+        mov rdi, R
+        call writeUDlong
+
+        mov rdi, VARIS
         mov rsi, 'S'
         xor rax, rax
         call printf
@@ -126,6 +147,13 @@ main:
         mov rsi, 'T'
         mov rdx, '*'
         mov rcx, 'Z'
+        xor rax, rax
+        call printf
+        mov rdi, T
+        call writeUDlong
+
+        mov rdi, VARIS
+        mov rsi, 'T'
         xor rax, rax
         call printf
         mov rdi, T
