@@ -129,6 +129,9 @@ multiplication:
 	jle %%done				; jump to done
 
 	sub al, 32				; else sub 32 to convert a-f
+	cmp al, 0Ah				; cmp A
+	jl %%invalidChar			; filter ASCII 5B-60
+
 	cmp al, 0Fh				; if less or equal than F
 	jle %%done				; jump to done
 
