@@ -116,17 +116,25 @@ multiplication:
 %macro _stringToHex 0
 	cmp al, '0'				; if less than '0' end of string or invalid char
 	jl %%invalidChar			; jump to done
+
 	sub al, '0'				; sub '0' to convert 0-9
-	cmp al, 9				; if 0-9
+	cmp al, 9				; cmp 0-9
 	jle %%done				; jump to done
+
 	sub al, 7				; else sub 7 to convert A-F
-	cmp al, 0Fh				; if A-F
+	cmp al, 0Ah				; cmp A
+	jl %%invalidChar			; filter ASCII 3Ah-40h
+
+	cmp al, 0Fh				; cmp F
 	jle %%done				; jump to done
+
 	sub al, 32				; else sub 32 to convert a-f
 	cmp al, 0Fh				; if less or equal than F
 	jle %%done				; jump to done
+
 	%%invalidChar:				; label for invalid character
 	mov al, 0				; set 0 if invalid
+
 	%%done:
 %endmacro
 
