@@ -14,10 +14,9 @@ SECTION .text
 
 GLOBAL addition, subtraction, multiplication, readUDlong, writeUDlong, copyUDlong
 
-; Adds number from rsi to rdi
+; Adds number from RSI to RDI. Stores result in RDI.
 ; RDI = address of first summand
 ; RSI = address of second summand
-; return RDI
 addition:
 	push rax
 
@@ -29,10 +28,9 @@ addition:
 	pop rax
 	ret
 
-; Subtracts number from rsi to rdi
+; Subtracts number from RSI to RDI. Stores result in RDI.
 ; RDI = address of minuend
 ; RSI = address of subtrahend
-; return RDI
 subtraction:
 	push rax
 
@@ -44,10 +42,9 @@ subtraction:
 	pop rax
 	ret
 
-; Multiply rsi with rdi
+; Multiply RDI with RSI. Stores result in RDI.
 ; RDI = address of first multiplier
 ; RSI = address of second multiplier
-; return RDI
 multiplication:
 	push r8
 	push r9
@@ -57,20 +54,20 @@ multiplication:
 	mov r8, qword[rdi]	; frist block, first multiplier 
 	mov r9, qword[rdi+8]	; second block, first multiplier
 
-	xor rdx, rdx		; clear rdx for mul
+	xor rdx, rdx		; clear RDX for mul
 	mov rax, r8
 	mul qword[rsi]		; multiply first 2 blocks
 	mov qword[rdi], rax	; move first result to first block
 	mov qword[rdi+8], rdx	; move overflow to second block
 
-	xor rdx, rdx		; clear rdx for mul
+	xor rdx, rdx		; clear RDX for mul
 	mov rax, r8
 	mul qword[rsi+8]	; multiply first block with second block
 	add qword[rdi+8], rax	; add first multiplication block
 
 	mov r10, rdx		; to calculate OF
 
-	xor rdx, rdx		; clear rdx for mul
+	xor rdx, rdx		; clear RDX for mul
 	mov rax, r9
 	mul qword[rsi]		; multiply second block with first block
 	add qword[rdi+8], rax	; add first multiplication block
@@ -80,7 +77,7 @@ multiplication:
 	cmp r10, 0		; check if no overflow
 	jne .setOverFlowFlag	; set OF if overflow from mul
 
-	jmp $+2			; no overflow so jump next 2 lines
+	jmp $+2			; no overflow, jump next 2 lines
 	.setOverFlowFlag:
 	sev			; set overflow flag
 
@@ -90,9 +87,10 @@ multiplication:
 	pop r8
 	ret
 
-; reads hexstring into BUFF. Maxlength is BUFFLEN.
-; %1 = 0 for read, 1 for write
-; return BUFF as String, RBP as read length
+; Reads/writes hexstring into BUFF. Maxlength is BUFFLEN.
+; %1 = 0 for read
+; %1 = 1 for write
+; Sets RBP as input length
 %macro  _readWriteUDlong 1
         push rsi
         push rdi
@@ -113,8 +111,8 @@ multiplication:
         pop rsi
 %endmacro
 
-; converts string in register al to its hex equavilent
-; return AL as converted value
+; Converts string in register AL to its hex equavilent.
+; AL = number to convert
 %macro _stringToHex 0
 	cmp al, '0'				; if less than '0' end of string or invalid char
 	jl %%invalidChar			; jump to done
@@ -127,43 +125,43 @@ multiplication:
 	sub al, 32				; else sub 32 to convert a-f
 	cmp al, 0Fh				; if less or equal than F
 	jle %%done				; jump to done
-	%%invalidChar:
-	mov al, 0
+	%%invalidChar:				; label for invalid character
+	mov al, 0				; set 0 if invalid
 	%%done:
 %endmacro
 
-; Reads number to rdi
-; RDI = address to read number
+; Reads number from STDIN to address in RDI.
+; RDI = address to read number to
 readUDlong:
-	mov qword[BUFF], 0
-	mov qword[BUFF+8], 0
-
-	_readWriteUDlong 0
+	_readWriteUDlong 0			; reads STDIN to BUFF
 
 	push rcx
 	push rdx
 	push rax
 	push rbx
 
-	mov rcx, UDLONGLEN			; store loop
-	xor rdx, rdx				; input loop
+	mov rcx, rbp				; input loop
+	dec rcx					; string starts by 0
+	dec rcx					; to remove LF
+	xor rdx, rdx				; store loop
 
-	.stringLoop:
-		xor rax, rax			; clear rax
-		mov al, byte[BUFF+rdx*2]	; copy letter
-		_stringToHex
-		mov rbx, rax			; store hex value in bl
+	.stringLoop:				; loop over the string 
+		xor rax, rax			; clear RAX
+		mov al, byte[BUFF+rcx-1]	; copy letter
+		_stringToHex			; convert char to hex
+		mov rbx, rax			; store hex value in BL
 		shl bl, 4			; shift 4 for little endian
 
-		mov al, byte[BUFF+rdx*2+1]	; copy second letter
-		_stringToHex
-		or bl, al			; or bl (xxxx0000) with al (0000xxxx)
-		mov [rdi+rcx-1], bl		; store bl to its position
+		mov al, byte[BUFF+rcx]		; copy second letter
+		_stringToHex			; convert char to hex
+		or bl, al			; or BL (xxxx0000) with AL (0000xxxx)
+		mov [rdi+rdx], bl		; store BL to its position
 
-		inc rdx
-		dec rcx
-		cmp rdx, rbp			; if rdx not >= readlength
-		jnae .stringLoop
+		inc rdx				; inc store position
+		dec rcx				; dec for first char
+		dec rcx				; dec for second char
+		cmp rcx, 0			; compare RCX to 0
+		jns .stringLoop			; jump as long as it is not negative
 
 	pop rbx
 	pop rax
@@ -171,7 +169,7 @@ readUDlong:
 	pop rcx
 	ret
 
-; Writes number from rdi
+; Writes number at address of RSI to STDOUT.
 ; RDI = address of number to write
 writeUDlong:
 	push rcx
@@ -181,9 +179,9 @@ writeUDlong:
 
 	mov rcx, UDLONGLEN			; store loop
 	xor rdx, rdx				; output loop
-	.hexToString:
+	.hexToString:				; loop to convert hex to string
 		xor rax, rax			; clear rax
-		mov al, byte[rdi+rcx-1]		; mov current number to al
+		mov al, byte[rdi+rcx-1]		; mov current number to AL
 		mov rbx, rax			; copy it for second nybble
 
 		and al, 0Fh			; mask out all but low nybble
@@ -192,13 +190,13 @@ writeUDlong:
 
 		shr bl, 4			; shift high 4 bits of char into low 4 bits
 		mov bl, byte[HEXDIGITS+rbx]	; get character equivalent
-		mov byte[BUFF+rdx*2], bl	; writes the number to its position
-		inc rdx
-		loop .hexToString
+		mov byte[BUFF+rdx*2], bl	; write the number to its position
+		inc rdx				; inc RDX for the next write iteration
+		loop .hexToString		; loop over the string
 
-	mov byte[BUFF+BUFFLEN-1], 10
+	mov byte[BUFF+BUFFLEN-1], 10		; add LF to the end
 
-	_readWriteUDlong 1
+	_readWriteUDlong 1			; write the number to STDOUT
 
 	pop rbx
 	pop rax
@@ -206,20 +204,17 @@ writeUDlong:
 	pop rcx
 	ret
 
-; Copy number from rdi to rdi
+; Copy number from RDI to RSI.
 ; RDI = address of original number
-; RSI = address to copy number
+; RSI = address of copy number
 copyUDlong:
-	push rdi
-	push rsi
-	push rdi
-	mov rdi, rsi
-	pop rsi
+	push rax
 
-	mov rcx, UDLONGLEN
-	rep movsb
+	mov rax, qword[rdi]			; copy the first qword
+	mov qword[rsi], rax			; to qword[RSI]
+	mov rax, qword[rdi+8]			; copy the second qword
+	mov qword[rsi+8], rax			; to qword[RSI+8]
 
-	pop rsi
-	pop rdi
+	pop rax
 	ret
 
