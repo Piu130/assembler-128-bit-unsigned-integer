@@ -1,8 +1,8 @@
-
 SECTION .data
 
 	BIGINTEGERLEN EQU 16
 
+	WELCOME: db "You can insert the following chars: [0-9a-fA-F]. All others are set to 0.",10,0
 	ENTER: db "Enter %c:",10,0
 	CALCOUTPUT: db "%c %c %c =",10,0
 	VARIS: db "%c is: ",10,0
@@ -25,6 +25,10 @@ GLOBAL main
 
 main:
 	nop
+
+	mov rdi, WELCOME
+	xor rax, rax
+	call printf
 
 	mov rdi, ENTER
 	mov rsi, 'X'
